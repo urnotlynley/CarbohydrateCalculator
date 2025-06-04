@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>饮食比例计算器</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    input {
+      margin: 5px;
+      padding: 5px;
+      width: 100px;
+    }
+
+    .tips {
+      font-size: 13px;
+      color: #aaa;
+      display: flex;
+    }
+
+    .type {
+
+      color: #666;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f5f5f5;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>营养素摄入计算器</h2>
+
+    <div>
+      <label>体重 (kg): <input type="number" v-model.number="weight"></label>
+      <label>碳水比 (g/kg): <input type="number" v-model.number="carbRatio"></label>
+      <label>脂肪比 (g/kg): <input type="number" v-model.number="fatRatio"></label>
+      <label>蛋白比 (g/kg): <input type="number" v-model.number="proteinRatio"></label>
+    </div>
+    <div class="tips">
+      (
+      <span><span class="type">外胚型</span>：碳水3g、脂肪1-1.2g、蛋白0.8-1.5g；</span>
+      <span><span class="type">内胚型</span>：碳水2g、脂肪0.8g、蛋白0.8-1.5g；</span>
+      <span><span class="type">中胚型</span>：不超过z大值和低于z小值即可</span>
+      )
+    </div>
+    <div>
+      <h3>比例设置（总摄入百分比）</h3>
+      <label>高碳日：碳水% <input type="number" v-model.number="highCarbRatio"> 脂肪% <input type="number"
+          v-model.number="highFatRatio"></label><br>
+      <label>中碳日：碳水% <input type="number" v-model.number="midCarbRatio"> 脂肪% <input type="number"
+          v-model.number="midFatRatio"></label><br>
+      <label>低碳日：碳水% <input type="number" v-model.number="lowCarbRatio"> 脂肪% <input type="number"
+          v-model.number="lowFatRatio"></label>
+    </div>
+
+    <div v-if="totalCarbs">
+      <h3>每周总摄入</h3>
+      <ul>
+        <li>碳水: {{ totalCarbs.toFixed(2) }}g</li>
+        <li>蛋白: {{ totalProtein.toFixed(2) }}g</li>
+        <li>脂肪: {{ totalFat.toFixed(2) }}g</li>
+      </ul>
+
+      <h3>每日摄入分配</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>类型</th>
+            <th>天数</th>
+            <th>每日碳水 (g)</th>
+            <th>每日蛋白 (g)</th>
+            <th>每日脂肪 (g)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>高碳日</td>
+            <td>2</td>
+            <td>{{ (totalCarbs * highCarbRatio / 100 / 2).toFixed(2) }}</td>
+            <td>{{ dailyProtein.toFixed(2) }}</td>
+            <td>{{ (totalFat * highFatRatio / 100 / 2).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <td>中碳日</td>
+            <td>3</td>
+            <td>{{ (totalCarbs * midCarbRatio / 100 / 3).toFixed(2) }}</td>
+            <td>{{ dailyProtein.toFixed(2) }}</td>
+            <td>{{ (totalFat * midFatRatio / 100 / 3).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <td>低碳日</td>
+            <td>2</td>
+            <td>{{ (totalCarbs * lowCarbRatio / 100 / 2).toFixed(2) }}</td>
+            <td>{{ dailyProtein.toFixed(2) }}</td>
+            <td>{{ (totalFat * lowFatRatio / 100 / 2).toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        weight: 65,
+        carbRatio: 3,
+        fatRatio: 1,
+        proteinRatio: 1.5,
+        highCarbRatio: 50,
+        midCarbRatio: 35,
+        lowCarbRatio: 15,
+        highFatRatio: 15,
+        midFatRatio: 35,
+        lowFatRatio: 50
+      },
+      computed: {
+        totalCarbs() {
+          return this.weight * this.carbRatio * 7;
+        },
+        totalProtein() {
+          return this.weight * this.proteinRatio;
+        },
+        totalFat() {
+          return this.weight * this.fatRatio * 7;
+        },
+        dailyProtein() {
+          return this.totalProtein; // 蛋白每日不变
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
